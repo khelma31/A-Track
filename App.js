@@ -1,19 +1,14 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, Image, ImageBackground } from 'react-native';
 import {
   Notification, Receipt21, Clock, Message, HambergerMenu, Profile,
   Location, Scroll, Like, LocationTick
 } from 'iconsax-react-native';
+import HorizontalContent from './HorizontalContent';
 import { fontType, colors } from './src/theme';
 
 export default function App() {
+
   return (
     <ImageBackground
       source={require('./src/assets/background/6.jpg')}
@@ -30,68 +25,8 @@ export default function App() {
       <View style={contents.content}>
         <View style={contents.contentScroll}>
           <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={contents.contentBox}>
-              <Text style={contents.contentBoxTitle}>
-                Categories
-              </Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View style={contents.contentBoxCard}>
-                  <Text style={contents.cbxText}>Recommended</Text>
-                </View>
-                <View style={contents.contentBoxCard}>
-                  <Text style={contents.cbxText}>Mountain</Text>
-                </View>
-                <View style={contents.contentBoxCard}>
-                  <Text style={contents.cbxText}>Hill</Text>
-                </View>
-              </ScrollView>
-            </View>
-            <View style={contents.contentBox}>
-              <Text style={contents.contentBoxTitle}>
-                Most popular places
-              </Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View style={contents.contentBoxCard2}>
-                  <ImageBackground
-                    source={require('./src/assets/image/1.jpg')}
-                    style={contents.cbxImage}
-                    imageStyle={{ borderRadius: 10 }}
-                    resizeMode="cover">
-                    <Like color={colors.white()} variant="Broken" size={35} style={{ bottom: 55, left: 95 }} />
-                    <View style={contents.cbxImageInfo}>
-                      <Text style={contents.cbxImageTitle}>Gunung Semeru</Text>
-                      <Text style={contents.cbxImageText}>Jawa Timur</Text>
-                    </View>
-                  </ImageBackground>
-                </View>
-                <View style={contents.contentBoxCard2}>
-                  <ImageBackground
-                    source={require('./src/assets/image/2.jpg')}
-                    style={contents.cbxImage}
-                    imageStyle={{ borderRadius: 10 }}
-                    resizeMode="cover">
-                    <Like color={colors.white()} variant="Broken" size={35} style={{ bottom: 55, left: 95 }} />
-                    <View style={contents.cbxImageInfo}>
-                      <Text style={contents.cbxImageTitle}>Gunung Kerinci</Text>
-                      <Text style={contents.cbxImageText}>Sumatera Barat</Text>
-                    </View>
-                  </ImageBackground>
-                </View>
-                <View style={contents.contentBoxCard2}>
-                  <ImageBackground
-                    source={require('./src/assets/image/campuhan.jpg')}
-                    style={contents.cbxImage}
-                    imageStyle={{ borderRadius: 10 }}
-                    resizeMode="cover">
-                    <Like color={colors.white()} variant="Broken" size={35} style={{ bottom: 55, left: 95 }} />
-                    <View style={contents.cbxImageInfo}>
-                      <Text style={contents.cbxImageTitle}>Bukit Campuhan</Text>
-                      <Text style={contents.cbxImageText}>Bali</Text>
-                    </View>
-                  </ImageBackground>
-                </View>
-              </ScrollView>
-            </View>
+            <CategoryList categories={['Recommended', 'Mountain', 'Hill']} />
+            <HorizontalContent />
             <View style={contents.contentBox}>
               <Text style={contents.contentBoxTitle}>
                 My schedule
@@ -107,7 +42,7 @@ export default function App() {
                     <Text style={contents.bxc3Text}>10 June, 2023</Text>
                   </View>
                 </View>
-                <LocationTick color={colors.white()} variant="Broken" size={35} style={{right: 30}}/>
+                <LocationTick color={colors.white()} variant="Broken" size={35} style={{ right: 30 }} />
               </View>
             </View>
           </ScrollView>
@@ -151,6 +86,25 @@ const styles = StyleSheet.create({
     color: colors.grey(),
   },
 });
+
+const CategoryList = (props) => {
+  const { categories } = props;
+
+  return (
+    <View style={contents.contentBox}>
+      <Text style={contents.contentBoxTitle}>
+        Categories
+      </Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        {categories.map((category, index) => (
+          <View key={index} style={contents.contentBoxCard}>
+            <Text style={contents.cbxText}>{category}</Text>
+          </View>
+        ))}
+      </ScrollView>
+    </View>
+  );
+};
 
 const contents = StyleSheet.create({
   content: {
@@ -300,4 +254,4 @@ const contents = StyleSheet.create({
     fontSize: 13,
     color: colors.white(0.95),
   },
-});
+})
