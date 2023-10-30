@@ -133,14 +133,14 @@ const contents = StyleSheet.create({
     marginVertical: 40,
     marginLeft: 10,
     flex: 1,
-    flexDirection: 'column', 
+    flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'baseline', 
+    alignItems: 'baseline',
   },
   contentBoxBottomContent: {
-    flex: 1, 
+    flex: 1,
     justifyContent: 'center',
-    alignItems: 'baseline', 
+    alignItems: 'baseline',
   },
   bxc3Title: {
     fontFamily: fontType['Pps-Bold'],
