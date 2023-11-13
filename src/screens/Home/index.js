@@ -31,7 +31,7 @@ const HomePage = () => {
               <Text style={contents.contentBoxTitle}>
                 My schedule
               </Text>
-              <View style={contents.contentBoxCard3}>
+              <TouchableOpacity style={contents.contentBoxCard3}>
                 <Image
                   source={{ uri: 'https://asset.kompas.com/crops/OD9itl1d8QHvxgLLaKN3u13KhYw=/1x0:1000x666/750x500/data/photo/2023/02/28/63fdb9789cf09.jpg' }}
                   style={contents.bxc3Image}>
@@ -43,7 +43,7 @@ const HomePage = () => {
                   </View>
                 </View>
                 <LocationTick color={colors.white()} variant="Broken" size={35} style={{ right: 30 }} />
-              </View>
+              </TouchableOpacity>
             </View>
           </ScrollView>
         </View>
@@ -94,25 +94,22 @@ const CategoryList = (props) => {
       <Text style={contents.contentBoxTitle}>
         Categories
       </Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {categories.map((category, index) => (
-            <View key={index} style={contents.contentBoxCard}>
-              <Text
-                style={contents.cbxText}
-                onPress={() => handleCategoryPress(category)}
-              >
-                {category}
-              </Text>
-            </View>
-          ))}
-        </ScrollView>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        {categories.map((category, index) => (
+          <TouchableOpacity key={index} style={contents.contentBoxCard}>
+            <Text style={contents.cbxText}>
+              {category}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
     </View>
   );
 };
 
 const contents = StyleSheet.create({
   content: {
-    marginVertical: 180,
+    marginVertical: 150,
     paddingHorizontal: 25,
     paddingVertical: 25,
     height: 500,
@@ -122,9 +119,8 @@ const contents = StyleSheet.create({
     alignContent: 'center',
   },
   contentScroll: {
-    paddingHorizontal: 5,
-    backgroundColor: colors.white(),
-    height: 390,
+    padding: 4,
+    height: 370,
     borderRadius: 25,
     justifyContent: 'center',
     alignContent: 'center',

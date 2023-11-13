@@ -1,36 +1,42 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, Image, ImageBackground } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, Image, ImageBackground, TouchableOpacity } from 'react-native';
 import {
   Notification, Receipt21, Clock, Message, HambergerMenu, Profile,
   Location, Scroll, Like, LocationTick
 } from 'iconsax-react-native';
 import { fontType, colors } from './src/theme';
+import { useNavigation } from '@react-navigation/native';
 
 const HorizontalContent = () => {
   const [contentData, setContentData] = useState([
     {
-      title: 'Gunung Semeru',
+      id: 1,
+      title: 'Gunung Ijen',
       location: 'Jawa Timur',
-      image: require('./src/assets/image/1.jpg'),
+      image: { uri: 'https://i.pinimg.com/736x/75/cb/1b/75cb1b2470fbc81cd3178f8e80f9bd28.jpg' }
     },
     {
-      title: 'Gunung Kerinci',
-      location: 'Sumatera Barat',
-      image: require('./src/assets/image/2.jpg'),
+      id: 2,
+      title: 'Gunung Ijen',
+      location: 'Jawa Timur',
+      image: { uri: 'https://i.pinimg.com/736x/75/cb/1b/75cb1b2470fbc81cd3178f8e80f9bd28.jpg' }
     },
     {
-      title: 'Bukit Campuhan',
-      location: 'Bali',
-      image: require('./src/assets/image/campuhan.jpg'),
+      id: 3,
+      title: 'Gunung Ijen',
+      location: 'Jawa Timur',
+      image: { uri: 'https://i.pinimg.com/736x/75/cb/1b/75cb1b2470fbc81cd3178f8e80f9bd28.jpg' }
     },
   ]);
+
+  const navigation = useNavigation()
 
   return (
     <View style={contents.contentBox}>
       <Text style={contents.contentBoxTitle}>Most popular places</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {contentData.map((item, index) => (
-          <View key={index} style={contents.contentBoxCard2}>
+          <TouchableOpacity key={index} style={contents.contentBoxCard2} onPress={() => navigation.navigate('ExplorePage')}>
             <ImageBackground
               source={item.image}
               style={contents.cbxImage}
@@ -48,7 +54,7 @@ const HorizontalContent = () => {
                 <Text style={contents.cbxImageText}>{item.location}</Text>
               </View>
             </ImageBackground>
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>

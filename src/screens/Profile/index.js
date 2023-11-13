@@ -30,9 +30,9 @@ const ProfilePage = () => {
                     <View style={profile.box}>
                         <Text style={profile.placeholder}>sumbulsidomukti@rocketmail.com</Text>
                     </View>
-                    <View style={profile.edit}>
+                    <TouchableOpacity style={profile.edit}>
                         <Text style={profile.editText}>Edit Profile</Text>
-                    </View>
+                    </TouchableOpacity>
                 </View>
             </View>
         </ImageBackground>

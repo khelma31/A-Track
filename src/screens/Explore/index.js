@@ -5,13 +5,16 @@ import {
     Location, Scroll, Like, LocationTick, ArrowLeft, Star1
 } from 'iconsax-react-native';
 import { fontType, colors } from '../../../src/theme';
+import { useNavigation } from '@react-navigation/native';
 
 const ExplorePage = () => {
-
+    const navigation = useNavigation()
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <ArrowLeft color={colors.black()} variant="Linear" size={30}/>
+                <TouchableOpacity style={{ padding:4, }} onPress={()=> navigation.navigate('HomePage')}>
+                    <ArrowLeft color={colors.black()} variant="Linear" size={30}/>
+                </TouchableOpacity>
             </View>
             <BackgroundContent />
             <MainContent />
