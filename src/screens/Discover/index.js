@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, Image, ImageBackground, TouchableOpacity } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { ScrollView, StyleSheet, Text, View, Image, ImageBackground, TouchableOpacity, Animated } from 'react-native';
 import {
     Notification, Receipt21, Clock, Message, HambergerMenu, Profile,
     Location, Scroll, Like, LocationTick, ArrowLeft, Star1, SearchNormal, Filter
@@ -41,13 +41,26 @@ const DiscoverPage = () => {
             location: 'Jawa Timur',
             image: { uri: 'https://i.pinimg.com/736x/75/cb/1b/75cb1b2470fbc81cd3178f8e80f9bd28.jpg' }
         },
+        {
+            id: 6,
+            title: 'Gunung Ijen',
+            location: 'Jawa Timur',
+            image: { uri: 'https://i.pinimg.com/736x/75/cb/1b/75cb1b2470fbc81cd3178f8e80f9bd28.jpg' }
+        },
     ]);
 
     const navigation = useNavigation()
+    const scrollY = useRef(new Animated.Value(0)).current;
+    const diffClampY = Animated.diffClamp(scrollY, 0, 142);
+    const recentY = diffClampY.interpolate({
+        inputRange: [0, 142],
+        outputRange: [0, -64],
+        extrapolate: 'clamp',
+    }); 
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
+            <Animated.View style={[styles.header, { transform: [{ translateY: recentY }] }]}>
                 <View style={styles.search}>
                     <SearchNormal color={colors.black(0.5)} variant="Linear" size={20} style={{ marginRight: 10 }} />
                     <Text style={styles.searchText}>Discover</Text>
@@ -55,12 +68,17 @@ const DiscoverPage = () => {
                 <View style={styles.filter}>
                     <Filter color={colors.black(0.5)} variant="Linear" size={20} />
                 </View>
-            </View>
-            <View style={list.containerList}>
-                <View style={list.cardContainer}>
-                    <ScrollView showsVerticalScrollIndicator={false}>
+            </Animated.View>
+            <View style={ list.containerList }>
+                <Animated.View style={[list.cardContainer, {transform: [{translateY: recentY}]}]}>
+                    <Animated.ScrollView
+                        showsVerticalScrollIndicator={false}
+                        onScroll={Animated.event(
+                            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                            { useNativeDriver: true },
+                        )}>
                         {contentData.map((item, index) => (
-                            <TouchableOpacity key={index} style={contents.contentBoxCard2} onPress={()=> navigation.navigate(ExplorePage)}>
+                            <TouchableOpacity key={index} style={contents.contentBoxCard2} onPress={() => navigation.navigate(ExplorePage)}>
                                 <ImageBackground
                                     source={item.image}
                                     style={contents.cbxImage}
@@ -80,8 +98,8 @@ const DiscoverPage = () => {
                                 </ImageBackground>
                             </TouchableOpacity>
                         ))}
-                    </ScrollView>
-                </View>
+                    </Animated.ScrollView>
+                </Animated.View>
             </View>
 
         </View>
@@ -135,12 +153,10 @@ const styles = StyleSheet.create({
 const list = StyleSheet.create({
     containerList: {
         flex: 1,
-        flexDirection: 'row',
-        flexWrap: 'wrap'
     },
     cardContainer: {
         flexDirection: 'column',
-        marginBottom: 20,
+        marginBottom: -50,
     },
     cardBox: {
         flexDirection: 'row',

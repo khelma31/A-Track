@@ -17,7 +17,9 @@ const HomePage = () => {
       <View style={styles.container}>
         <View style={styles.header}>
           <HambergerMenu color={colors.black()} variant="Broken" size={28} />
-          <Profile color={colors.black()} variant="Broken" size={28} />
+          <TouchableOpacity>
+            <Profile color={colors.black()} variant="Broken" size={28} />
+          </TouchableOpacity>
         </View>
       </View>
       <Text style={styles.title}>Hi Mikhael!</Text>

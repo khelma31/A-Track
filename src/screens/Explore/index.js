@@ -12,7 +12,7 @@ const ExplorePage = () => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity style={{ padding:4, }} onPress={()=> navigation.navigate('HomePage')}>
+                <TouchableOpacity style={{ padding:4, }} onPress={()=> navigation.navigate('Discover')}>
                     <ArrowLeft color={colors.black()} variant="Linear" size={30}/>
                 </TouchableOpacity>
             </View>
@@ -167,7 +167,7 @@ const content = StyleSheet.create({
         flex: 1,
     },
     boxContent: {
-        height: 500,
+        height: 475,
         width: '100%',
         backgroundColor: colors.white(),
         flexDirection: 'column',
@@ -193,6 +193,7 @@ const content = StyleSheet.create({
         fontFamily: fontType['Pps-Medium'],
         fontSize: 13,
         color: colors.grey(),
+        textAlign: "justify",
     },
     boxPhotos: {
         height: 175,
