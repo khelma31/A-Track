@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { DiscoverPage, ExplorePage, HomePage, ProfilePage } from './src/screens';
+import { AddBlogPage, DiscoverPage, ExplorePage, HomePage, ProfilePage, SearchPage } from './src/screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { fontType, colors } from './src/theme';
 import { NavigationContainer } from '@react-navigation/native';
 import {
- Home2, LocationDiscover, ProfileCircle
+  Home2, LocationDiscover, ProfileCircle
 } from 'iconsax-react-native';
 
 const Tab = createBottomTabNavigator();
@@ -24,6 +24,21 @@ export default function App() {
           name="ExplorePage"
           component={ExplorePage}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="SearchPage"
+          component={SearchPage}
+          options={{
+            headerShown: false,
+            presentation: 'transparentModal',
+          }}
+        />
+        <Stack.Screen
+          name="AddBlogPage"
+          component={AddBlogPage}
+          options={{
+            headerShown: false,
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
@@ -65,7 +80,7 @@ function MainApp() {
         }}
       />
       <Tab.Screen
-        name="Discover"
+        name="DiscoverPage"
         component={DiscoverPage}
         options={{
           tabBarLabel: 'Discover',
@@ -80,7 +95,7 @@ function MainApp() {
         }}
       />
       <Tab.Screen
-        name="Profile"
+        name="ProfilePage"
         component={ProfilePage}
         options={{
           tabBarLabel: 'Profile',
@@ -96,5 +111,4 @@ function MainApp() {
       />
     </Tab.Navigator>
   )
-}
-
+};

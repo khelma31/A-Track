@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, Image, ImageBackground, TouchableOpacity, Button } from 'react-native';
-import {
-    Notification, Receipt21, Clock, Message, HambergerMenu, Profile,
-    Location, Scroll, Like, LocationTick, Edit
-} from 'iconsax-react-native';
-import HorizontalContent from '../../../HorizontalContent';
+import { StyleSheet, Text, View, Image, ImageBackground, TouchableOpacity, Button } from 'react-native';
 import { fontType, colors } from '../../../src/theme';
+import AddBlogPage from '../AddBlogForm';
+import { useNavigation } from '@react-navigation/native';
 
 const ProfilePage = () => {
-
+    const navigation = useNavigation()
     return (
         <ImageBackground
             source={{ uri: 'https://i.pinimg.com/236x/eb/75/7a/eb757a8e3e44f2486143dcf7ece59e61.jpg' }}
@@ -33,11 +30,16 @@ const ProfilePage = () => {
                     <TouchableOpacity style={profile.edit}>
                         <Text style={profile.editText}>Edit Profile</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity style={profile.add} onPress={() => navigation.navigate(AddBlogPage)}>
+                        <Text style={profile.addText}>Add Blog Form</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         </ImageBackground>
     );
 };
+
+export default ProfilePage;
 
 const styles = StyleSheet.create({
     container: {
@@ -91,7 +93,7 @@ const profile = StyleSheet.create({
         backgroundColor: colors.black(0.1),
         borderRadius: 15,
         paddingHorizontal: 15,
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     placeholder: {
         marginTop: 4,
@@ -100,23 +102,39 @@ const profile = StyleSheet.create({
         color: colors.grey(),
     },
     edit: {
-        marginTop: 50,
-        height: 60,
-        width: '100%',
+        marginTop: 20,
+        height: 53,
+        width: "100%",
         alignSelf: 'baseline',
-        backgroundColor: colors.black(0.6),
+        backgroundColor: colors.black(0.5),
         borderColor: '#eb4034',
-        borderRadius: 50,
+        borderRadius: 10,
         paddingHorizontal: 10,
-        paddingVertical: 15
+        paddingVertical: 15,
+        alignSelf: 'center'
+    },
+    add: {
+        marginTop: 20,
+        height: 53,
+        width: "100%",
+        alignSelf: 'baseline',
+        backgroundColor: "#2bbaae",
+        borderColor: '#eb4034',
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 15,
+        alignSelf: 'center'
+    },
+    addText: {
+        fontFamily: fontType['Pps-Medium'],
+        fontSize: 15,
+        color: colors.white(),
+        alignSelf: 'center'
     },
     editText: {
         fontFamily: fontType['Pps-Medium'],
-        fontSize: 20,
+        fontSize: 15,
         color: colors.white(),
         alignSelf: 'center'
     }
-})
-
-export default ProfilePage;
-
+});

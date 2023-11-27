@@ -7,6 +7,7 @@ import {
 import { fontType, colors } from '../../../src/theme';
 import { useNavigation } from '@react-navigation/native';
 import ExplorePage from '../Explore';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 const DiscoverPage = () => {
 
@@ -56,21 +57,23 @@ const DiscoverPage = () => {
         inputRange: [0, 142],
         outputRange: [0, -64],
         extrapolate: 'clamp',
-    }); 
+    });
 
     return (
         <View style={styles.container}>
             <Animated.View style={[styles.header, { transform: [{ translateY: recentY }] }]}>
-                <View style={styles.search}>
+                <TouchableWithoutFeedback style={styles.search} onPress={() => navigation.navigate("SearchPage")}>
                     <SearchNormal color={colors.black(0.5)} variant="Linear" size={20} style={{ marginRight: 10 }} />
                     <Text style={styles.searchText}>Discover</Text>
-                </View>
+                </TouchableWithoutFeedback>
                 <View style={styles.filter}>
-                    <Filter color={colors.black(0.5)} variant="Linear" size={20} />
+                    <TouchableOpacity>
+                        <Filter color={colors.black(0.5)} variant="Linear" size={20} />
+                    </TouchableOpacity>
                 </View>
             </Animated.View>
-            <View style={ list.containerList }>
-                <Animated.View style={[list.cardContainer, {transform: [{translateY: recentY}]}]}>
+            <View style={list.containerList}>
+                <Animated.View style={[list.cardContainer, { transform: [{ translateY: recentY }] }]}>
                     <Animated.ScrollView
                         showsVerticalScrollIndicator={false}
                         onScroll={Animated.event(
@@ -105,6 +108,8 @@ const DiscoverPage = () => {
         </View>
     )
 };
+
+export default DiscoverPage;
 
 const styles = StyleSheet.create({
     container: {
@@ -224,8 +229,4 @@ const contents = StyleSheet.create({
         fontSize: 13,
         color: colors.white(0.80),
     },
-});
-
-
-
-export default DiscoverPage;
+})

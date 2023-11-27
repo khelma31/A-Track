@@ -12,7 +12,7 @@ const ExplorePage = () => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity style={{ padding:4, }} onPress={()=> navigation.navigate('Discover')}>
+                <TouchableOpacity style={{ padding:4, }} onPress={()=> navigation.navigate('DiscoverPage')}>
                     <ArrowLeft color={colors.black()} variant="Linear" size={30}/>
                 </TouchableOpacity>
             </View>
@@ -84,7 +84,7 @@ const Picture = StyleSheet.create({
     boxReview: {
         width: 95,
         height: 70,
-        backgroundColor: '#266EF1',
+        backgroundColor: '#2bbaae',
         alignSelf: 'center',
         borderRadius: 10,
         marginHorizontal: 20,
@@ -239,7 +239,7 @@ const content = StyleSheet.create({
     boxSmallBooking2: {
         height: 50,
         width: 200,
-        backgroundColor: '#266EF1',
+        backgroundColor: '#2bbaae',
         borderRadius: 60,
         alignItems: 'center',
         justifyContent:'center'
@@ -253,7 +253,7 @@ const content = StyleSheet.create({
     textBooking1Price: {
         fontFamily: fontType['Pps-SemiBold'],
         fontSize: 20,
-        color: '#266EF1',
+        color: '#2bbaae',
         lineHeight: 25
     },
     textBooking2: {
