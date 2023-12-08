@@ -1,41 +1,86 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Image, ImageBackground, TouchableOpacity, Button } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { StyleSheet, Text, View, Image, ImageBackground, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { fontType, colors } from '../../../src/theme';
 import AddBlogPage from '../AddBlogForm';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import axios from 'axios';
+import { ScrollView } from 'react-native-gesture-handler';
+import { Schedule } from '../Schedule/schedule';
 
 const ProfilePage = () => {
     const navigation = useNavigation()
+    const [loading, setLoading] = useState(true);
+    const [blogData, setBlogData] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
+    const getDataBlog = async () => {
+        try {
+            const response = await axios.get(
+                'https://657198ffd61ba6fcc0130cb5.mockapi.io/atrackapp/blog',
+            );
+            setBlogData(response.data);
+            setLoading(false)
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+            getDataBlog()
+            setRefreshing(false);
+        }, 1500);
+    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            getDataBlog();
+        }, [])
+    );
     return (
-        <ImageBackground
-            source={{ uri: 'https://i.pinimg.com/236x/eb/75/7a/eb757a8e3e44f2486143dcf7ece59e61.jpg' }}
-            style={styles.backgroundImage}>
-            <View style={styles.container}>
-                <View style={styles.slider}>
-                    <View style={profile.pic}>
-                        <Image style={profile.image} source={{ uri: 'https://i.pinimg.com/564x/0a/8d/dc/0a8ddca85533fa3e61ff58908d05f347.jpg' }}></Image>
+        <ScrollView showsVerticalScrollIndicator={false}
+            refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }>
+            <ImageBackground
+                source={{ uri: 'https://i.pinimg.com/236x/eb/75/7a/eb757a8e3e44f2486143dcf7ece59e61.jpg' }}
+                style={styles.backgroundImage}>
+                <View style={styles.container}>
+                    <View style={styles.slider}>
+                        <View style={profile.pic}>
+                            <Image style={profile.image} source={{ uri: 'https://i.pinimg.com/564x/0a/8d/dc/0a8ddca85533fa3e61ff58908d05f347.jpg' }}></Image>
+                        </View>
+                        <View style={profile.textContainer}>
+                            <Text style={profile.text}>
+                                Miles Morales
+                            </Text>
+                            <Text style={profile.textMail}>
+                                miles@rocketmail.com
+                            </Text>
+                        </View>
+                        <View style={profile.btnContainer}>
+                            <TouchableOpacity style={profile.edit}>
+                                <Text style={profile.editText}>Edit Profile</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={profile.add} onPress={() => navigation.navigate(AddBlogPage)}>
+                                <Text style={profile.addText}>Add Blog Form</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={profile.formContainer}>
+                            <ScrollView showsVerticalScrollIndicator={false}>
+                                <View style={{ gap: 10}}>
+                                    {loading ? (
+                                        <ActivityIndicator size={'large'} color={colors.blue()} />
+                                    ) : (
+                                        blogData.map((item, index) => <Schedule item={item} key={index} />)
+                                    )}
+                                </View>
+                            </ScrollView>
+                        </View>
                     </View>
-                    <Text style={profile.text}>First Name</Text>
-                    <View style={profile.box}>
-                        <Text style={profile.placeholder}>Mikhael</Text>
-                    </View>
-                    <Text style={profile.text}>Last Name</Text>
-                    <View style={profile.box}>
-                        <Text style={profile.placeholder}>Christian</Text>
-                    </View>
-                    <Text style={profile.text}>Email</Text>
-                    <View style={profile.box}>
-                        <Text style={profile.placeholder}>sumbulsidomukti@rocketmail.com</Text>
-                    </View>
-                    <TouchableOpacity style={profile.edit}>
-                        <Text style={profile.editText}>Edit Profile</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={profile.add} onPress={() => navigation.navigate(AddBlogPage)}>
-                        <Text style={profile.addText}>Add Blog Form</Text>
-                    </TouchableOpacity>
                 </View>
-            </View>
-        </ImageBackground>
+            </ImageBackground>
+        </ScrollView>
     );
 };
 
@@ -55,8 +100,8 @@ const styles = StyleSheet.create({
         paddingVertical: 25,
         paddingHorizontal: 50,
         backgroundColor: colors.white(),
-        height: '200%',
-        borderRadius: 25,
+        height: 587,
+        borderRadius: 20,
         elevation: 5,
     },
     backgroundImage: {
@@ -74,37 +119,57 @@ const profile = StyleSheet.create({
         alignSelf: 'center',
         bottom: 70
     },
+    textContainer: {
+        marginTop: 10,
+        bottom: 55,
+        height: 50,
+        width: '100%',
+        alignSelf: 'center',
+        flexDirection: 'column'
+    },
     image: {
         height: 125,
         width: 125,
         borderRadius: 100
     },
     text: {
-        marginTop: 5,
+        fontFamily: fontType['Pps-Bold'],
+        fontSize: 18,
+        color: colors.black(),
+        alignSelf: 'center',
+        lineHeight: 22
+    },
+    textMail: {
         fontFamily: fontType['Pps-SemiBold'],
-        fontSize: 16,
+        fontSize: 13,
         color: colors.grey(),
+        alignSelf: 'center'
     },
-    box: {
-        margin: 7,
-        marginBottom: 7,
-        height: 40,
-        width: '100%',
-        backgroundColor: colors.black(0.1),
-        borderRadius: 15,
-        paddingHorizontal: 15,
+    btnContainer: {
+        bottom: 55,
+        height: 75,
+        backgroundColor: colors.black(0.0),
+        paddingVertical: 10,
+        width: 325,
+        alignSelf: 'center',
+        alignItems: "baseline",
         justifyContent: 'center',
+        flexDirection: 'row'
     },
-    placeholder: {
-        marginTop: 4,
-        fontFamily: fontType['Pps-Regular'],
-        fontSize: 14,
-        color: colors.grey(),
+    formContainer: {
+        bottom: 55,
+        height: 350,
+        width: 325,
+        alignSelf: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        paddingHorizontal: 10,
+        paddingVertical: 10
     },
     edit: {
-        marginTop: 20,
         height: 53,
-        width: "100%",
+        width: 140,
+        marginRight: 5,
         alignSelf: 'baseline',
         backgroundColor: colors.black(0.5),
         borderColor: '#eb4034',
@@ -114,9 +179,8 @@ const profile = StyleSheet.create({
         alignSelf: 'center'
     },
     add: {
-        marginTop: 20,
         height: 53,
-        width: "100%",
+        width: 140,
         alignSelf: 'baseline',
         backgroundColor: "#2bbaae",
         borderColor: '#eb4034',

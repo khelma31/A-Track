@@ -1,20 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import { ArrowLeft } from 'iconsax-react-native';
 import { fontType, colors } from '../../../src/theme';
 import axios from 'axios';
 
-const AddBlogPage = () => {
+const EditBlogPage = ({ route }) => {
+    const { blogId } = route.params;
+    const [blogData, setBlogData] = useState({
+        title: '',
+        price: '',
+        image: '',
+    });
+    const handleChange = (key, value) => {
+        setBlogData({
+            ...blogData,
+            [key]: value,
+        });
+    };
+    const [image, setImage] = useState(null);
+    const navigation = useNavigation();
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        getBlogById();
+    }, [blogId]);
 
-    const handleUpload = async () => {
+    const getBlogById = async () => {
+        try {
+            const response = await axios.get(
+                `https://657198ffd61ba6fcc0130cb5.mockapi.io/atrackapp/blog/${blogId}`,
+            );
+            setBlogData({
+                title: response.data.title,
+                price: response.data.price,
+            })
+            setImage(response.data.image)
+            setLoading(false);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    const handleUpdate = async () => {
         setLoading(true);
         try {
-            await axios.post('https://657198ffd61ba6fcc0130cb5.mockapi.io/atrackapp/blog', {
-                title: blogData.title,
-                price: blogData.price,
-                image,
-            })
+            await axios
+                .put(`https://657198ffd61ba6fcc0130cb5.mockapi.io/atrackapp/blog/${blogId}`, {
+                    title: blogData.title,
+                    price: blogData.price,
+                    image
+                })
                 .then(function (response) {
                     console.log(response);
                 })
@@ -27,25 +61,15 @@ const AddBlogPage = () => {
             console.log(e);
         }
     };
-
-    const [image, setImage] = useState(null);
-
-    const navigation = useNavigation();
-    const [loading, setLoading] = useState(false);
-
-    const [blogData, setBlogData] = useState({
-        title: '',
-        price: '',
-        image: '',
-    });
-
-    const handleChange = (key, value) => {
-        setBlogData({
-            ...blogData,
-            [key]: value,
-        });
-    };
-
+    const handleDelete = async () => {
+        await axios.delete(`https://657198ffd61ba6fcc0130cb5.mockapi.io/atrackapp/blog/${blogId}`)
+            .then(() => {
+                navigation.navigate('ProfilePage');
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
     return (
         <View style={styles.container}>
             <TouchableOpacity
@@ -80,9 +104,14 @@ const AddBlogPage = () => {
                             multiline
                         />
                     </View>
-                    <TouchableOpacity style={form.btnUpload} onPress={handleUpload}>
+                    <TouchableOpacity style={form.btnUpdate} onPress={handleUpdate}>
                         <Text style={form.textBtn}>
-                            Upload
+                            Update
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={form.btnDelete} onPress={handleDelete}>
+                        <Text style={form.textBtn}>
+                            Delete
                         </Text>
                     </TouchableOpacity>
                     {loading && (
@@ -95,8 +124,6 @@ const AddBlogPage = () => {
         </View>
     );
 };
-
-export default AddBlogPage;
 
 const styles = StyleSheet.create({
     container: {
@@ -126,6 +153,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
 });
+
+export default EditBlogPage;
 
 const form = StyleSheet.create({
     container: {
@@ -173,12 +202,21 @@ const form = StyleSheet.create({
         paddingLeft: 10,
         marginVertical: 4
     },
-    btnUpload: {
+    btnUpdate: {
         alignSelf: 'center',
         marginTop: 20,
         height: 50,
         width: '100%',
         backgroundColor: "#2bbaae",
+        borderRadius: 10,
+        justifyContent: 'center'
+    },
+    btnDelete: {
+        alignSelf: 'center',
+        marginTop: 20,
+        height: 50,
+        width: '100%',
+        backgroundColor: "#FF0000",
         borderRadius: 10,
         justifyContent: 'center'
     },

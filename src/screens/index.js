@@ -4,4 +4,6 @@ import ProfilePage from "./Profile";
 import DiscoverPage from "./Discover";
 import SearchPage from "./Search";
 import AddBlogPage from "./AddBlogForm";
-export {HomePage, ExplorePage, ProfilePage, DiscoverPage, SearchPage, AddBlogPage}
+import EditBlogPage from "./EditBlogForm";
+
+export {HomePage, ExplorePage, ProfilePage, DiscoverPage, SearchPage, AddBlogPage, EditBlogPage}

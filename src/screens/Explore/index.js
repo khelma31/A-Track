@@ -12,8 +12,8 @@ const ExplorePage = () => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity style={{ padding:4, }} onPress={()=> navigation.navigate('DiscoverPage')}>
-                    <ArrowLeft color={colors.black()} variant="Linear" size={30}/>
+                <TouchableOpacity style={{ padding: 4, }} onPress={() => navigation.navigate('DiscoverPage')}>
+                    <ArrowLeft color={colors.black()} variant="Linear" size={30} />
                 </TouchableOpacity>
             </View>
             <BackgroundContent />
@@ -242,7 +242,7 @@ const content = StyleSheet.create({
         backgroundColor: '#2bbaae',
         borderRadius: 60,
         alignItems: 'center',
-        justifyContent:'center'
+        justifyContent: 'center'
     },
     textBooking1: {
         fontFamily: fontType['Pps-Medium'],

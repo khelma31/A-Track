@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AddBlogPage, DiscoverPage, ExplorePage, HomePage, ProfilePage, SearchPage } from './src/screens';
+import { AddBlogPage, DiscoverPage, ExplorePage, HomePage, ProfilePage, SearchPage, EditBlogPage } from './src/screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { fontType, colors } from './src/theme';
@@ -36,6 +36,13 @@ export default function App() {
         <Stack.Screen
           name="AddBlogPage"
           component={AddBlogPage}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="EditBlogPage"
+          component={EditBlogPage}
           options={{
             headerShown: false,
           }}
