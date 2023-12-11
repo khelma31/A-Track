@@ -1,11 +1,12 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, ImageBackground, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { fontType, colors } from '../../../src/theme';
 import AddBlogPage from '../AddBlogForm';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import axios from 'axios';
+import { useNavigation} from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Schedule } from '../Schedule/schedule';
+import FastImage from 'react-native-fast-image';
+import firestore from '@react-native-firebase/firestore';
 
 const ProfilePage = () => {
     const navigation = useNavigation()
@@ -24,19 +25,42 @@ const ProfilePage = () => {
         }
     };
 
+    useEffect(() => {
+        const subscriber = firestore()
+            .collection('blog')
+            .onSnapshot(querySnapshot => {
+                const blogs = [];
+                querySnapshot.forEach(documentSnapshot => {
+                    blogs.push({
+                        ...documentSnapshot.data(),
+                        id: documentSnapshot.id,
+                    });
+                });
+                setBlogData(blogs);
+                setLoading(false);
+            });
+        return () => subscriber();
+    }, []);
+
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         setTimeout(() => {
-            getDataBlog()
+            firestore()
+                .collection('blog')
+                .onSnapshot(querySnapshot => {
+                    const blogs = [];
+                    querySnapshot.forEach(documentSnapshot => {
+                        blogs.push({
+                            ...documentSnapshot.data(),
+                            id: documentSnapshot.id,
+                        });
+                    });
+                    setBlogData(blogs);
+                });
             setRefreshing(false);
         }, 1500);
     }, []);
 
-    useFocusEffect(
-        useCallback(() => {
-            getDataBlog();
-        }, [])
-    );
     return (
         <ScrollView showsVerticalScrollIndicator={false}
             refreshControl={
@@ -68,7 +92,7 @@ const ProfilePage = () => {
                         </View>
                         <View style={profile.formContainer}>
                             <ScrollView showsVerticalScrollIndicator={false}>
-                                <View style={{ gap: 10}}>
+                                <View style={{ gap: 10 }}>
                                     {loading ? (
                                         <ActivityIndicator size={'large'} color={colors.blue()} />
                                     ) : (

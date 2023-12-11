@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "662471016678",
+    "project_id": "atrackapp-94559",
+    "storage_bucket": "atrackapp-94559.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:662471016678:android:609e135215f7abc3d1fb27",
+        "android_client_info": {
+          "package_name": "com.a_track"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNkwCk2xQxGc6cq3L4jEvVC4Nlp-xB1rE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

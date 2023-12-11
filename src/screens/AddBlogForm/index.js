@@ -1,30 +1,51 @@
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
-import { ArrowLeft } from 'iconsax-react-native';
+import { ArrowLeft, AddSquare, Add } from 'iconsax-react-native';
 import { fontType, colors } from '../../../src/theme';
-import axios from 'axios';
+import ImagePicker from 'react-native-image-crop-picker';
+import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
+import FastImage from 'react-native-fast-image';
 
 const AddBlogPage = () => {
 
+    const handleImagePick = async () => {
+        ImagePicker.openPicker({
+            width: 1920,
+            height: 1080,
+            cropping: true,
+        })
+            .then(image => {
+                console.log(image);
+                setImage(image.path);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    };
+
     const handleUpload = async () => {
+        let filename = image.substring(image.lastIndexOf('/') + 1);
+        const extension = filename.split('.').pop();
+        const name = filename.split('.').slice(0, -1).join('.');
+        filename = name + Date.now() + '.' + extension;
+        const reference = storage().ref(`blogimages/${filename}`);
+
         setLoading(true);
         try {
-            await axios.post('https://657198ffd61ba6fcc0130cb5.mockapi.io/atrackapp/blog', {
+            await reference.putFile(image);
+            const url = await reference.getDownloadURL();
+            await firestore().collection('blog').add({
                 title: blogData.title,
                 price: blogData.price,
-                image,
-            })
-                .then(function (response) {
-                    console.log(response);
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+                image: url,
+            });
             setLoading(false);
+            console.log('Blog added!');
             navigation.navigate('ProfilePage');
-        } catch (e) {
-            console.log(e);
+        } catch (error) {
+            console.log(error);
         }
     };
 
@@ -72,14 +93,58 @@ const AddBlogPage = () => {
                             multiline
                         />
                     </View>
-                    <View style={form.imageBox}>
-                        <TextInput
-                            placeholder="Image"
-                            value={image}
-                            onChangeText={(text) => setImage(text)}
-                            multiline
-                        />
-                    </View>
+                    {image ? (
+                        <View style={{ position: 'relative' }}>
+                            <FastImage
+                                style={{ width: '100%', height: 127, borderRadius: 5 }}
+                                source={{
+                                    uri: image,
+                                    headers: { Authorization: 'someAuthToken' },
+                                    priority: FastImage.priority.high,
+                                }}
+                                resizeMode={FastImage.resizeMode.cover}
+                            />
+                            <TouchableOpacity
+                                style={{
+                                    position: 'absolute',
+                                    top: -5,
+                                    right: -5,
+                                    backgroundColor: colors.blue(),
+                                    borderRadius: 25,
+                                }}
+                                onPress={() => setImage(null)}>
+                                <Add
+                                    size={20}
+                                    variant="Linear"
+                                    color={colors.white()}
+                                    style={{ transform: [{ rotate: '45deg' }] }}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    ) : (
+                        <TouchableOpacity onPress={handleImagePick}>
+                            <View
+                                style={[
+                                    styles.borderDashed,
+                                    {
+                                        gap: 10,
+                                        paddingVertical: 30,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    },
+                                ]}>
+                                <AddSquare color={"#2bbaae"} variant="Linear" size={42} />
+                                <Text
+                                    style={{
+                                        fontFamily: fontType['Pps-Regular'],
+                                        fontSize: 12,
+                                        color: colors.grey(0.6),
+                                    }}>
+                                    Upload Thumbnail
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}
                     <TouchableOpacity style={form.btnUpload} onPress={handleUpload}>
                         <Text style={form.textBtn}>
                             Upload
@@ -124,6 +189,14 @@ const styles = StyleSheet.create({
         bottom: 0,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    borderDashed: {
+        borderStyle: "dashed",
+        borderWidth: 1,
+        borderRadius: 5,
+        marginTop: 20,
+        padding: 10,
+        borderColor: "#2bbaae",
     },
 });
 

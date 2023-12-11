@@ -1,75 +1,127 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
-import { ArrowLeft } from 'iconsax-react-native';
+import { ArrowLeft, AddSquare, Add } from 'iconsax-react-native';
 import { fontType, colors } from '../../../src/theme';
-import axios from 'axios';
+import ImagePicker from 'react-native-image-crop-picker';
+import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
+import FastImage from 'react-native-fast-image';
 
 const EditBlogPage = ({ route }) => {
     const { blogId } = route.params;
+    const navigation = useNavigation();
+
     const [blogData, setBlogData] = useState({
         title: '',
         price: '',
         image: '',
     });
+
     const handleChange = (key, value) => {
         setBlogData({
             ...blogData,
             [key]: value,
         });
     };
-    const [image, setImage] = useState(null);
-    const navigation = useNavigation();
+
     const [loading, setLoading] = useState(true);
+    const [selectedBlog, setSelectedBlog] = useState(null);
+    const [image, setImage] = useState(null);
+    const [oldImage, setOldImage] = useState(null);
+
+
     useEffect(() => {
-        getBlogById();
+        const subscriber = firestore()
+            .collection('blog')
+            .doc(blogId)
+            .onSnapshot(documentSnapshot => {
+                const blogData = documentSnapshot.data();
+                if (blogData) {
+                    console.log('Blog data: ', blogData);
+                    setBlogData({
+                        title: blogData.title,
+                        price: blogData.price,
+                    });
+                    setOldImage(blogData.image);
+                    setImage(blogData.image);
+                    setLoading(false);
+                } else {
+                    console.log(`Blog with ID ${blogId} not found.`);
+                }
+            });
+        setLoading(false);
+        return () => subscriber();
     }, [blogId]);
 
-    const getBlogById = async () => {
-        try {
-            const response = await axios.get(
-                `https://657198ffd61ba6fcc0130cb5.mockapi.io/atrackapp/blog/${blogId}`,
-            );
-            setBlogData({
-                title: response.data.title,
-                price: response.data.price,
+    const handleImagePick = async () => {
+        ImagePicker.openPicker({
+            width: 1920,
+            height: 1080,
+            cropping: true,
+        })
+            .then(image => {
+                console.log(image);
+                setImage(image.path);
             })
-            setImage(response.data.image)
+            .catch(error => {
+                console.log(error);
+            });
+    };
+
+    const handleUpdate = async () => {
+        setLoading(true);
+        let filename = image.substring(image.lastIndexOf('/') + 1);
+        const extension = filename.split('.').pop();
+        const name = filename.split('.').slice(0, -1).join('.');
+        filename = name + Date.now() + '.' + extension;
+        const reference = storage().ref(`blogimages/${filename}`);
+        try {
+            if (image !== oldImage && oldImage) {
+                const oldImageRef = storage().refFromURL(oldImage);
+                await oldImageRef.delete();
+            }
+            if (image !== oldImage) {
+                await reference.putFile(image);
+            }
+            const url =
+                image !== oldImage ? await reference.getDownloadURL() : oldImage;
+            await firestore().collection('blog').doc(blogId).update({
+                title: blogData.title,
+                price: blogData.price,
+                image: url,
+            });
             setLoading(false);
+            console.log('Blog Updated!');
+            navigation.navigate('ProfilePage', { blogId });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleDelete = async () => {
+        setLoading(true);
+        try {
+            await firestore()
+                .collection('blog')
+                .doc(blogId)
+                .delete()
+                .then(() => {
+                    console.log('Blog deleted!');
+                });
+            if (selectedBlog?.image) {
+                const imageRef = storage().refFromURL(selectedBlog?.image);
+                await imageRef.delete();
+            }
+            console.log('Blog deleted!');
+            setSelectedBlog(null);
+            setLoading(false)
+            navigation.navigate('ProfilePage');
         } catch (error) {
             console.error(error);
         }
     };
-    const handleUpdate = async () => {
-        setLoading(true);
-        try {
-            await axios
-                .put(`https://657198ffd61ba6fcc0130cb5.mockapi.io/atrackapp/blog/${blogId}`, {
-                    title: blogData.title,
-                    price: blogData.price,
-                    image
-                })
-                .then(function (response) {
-                    console.log(response);
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
-            setLoading(false);
-            navigation.navigate('ProfilePage');
-        } catch (e) {
-            console.log(e);
-        }
-    };
-    const handleDelete = async () => {
-        await axios.delete(`https://657198ffd61ba6fcc0130cb5.mockapi.io/atrackapp/blog/${blogId}`)
-            .then(() => {
-                navigation.navigate('ProfilePage');
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    }
+
     return (
         <View style={styles.container}>
             <TouchableOpacity
@@ -96,14 +148,58 @@ const EditBlogPage = ({ route }) => {
                             multiline
                         />
                     </View>
-                    <View style={form.imageBox}>
-                        <TextInput
-                            placeholder="Image"
-                            value={image}
-                            onChangeText={(text) => setImage(text)}
-                            multiline
-                        />
-                    </View>
+                    {image ? (
+                        <View style={{ position: 'relative' }}>
+                            <FastImage
+                                style={{ width: '100%', height: 127, borderRadius: 5 }}
+                                source={{
+                                    uri: image,
+                                    headers: { Authorization: 'someAuthToken' },
+                                    priority: FastImage.priority.high,
+                                }}
+                                resizeMode={FastImage.resizeMode.cover}
+                            />
+                            <TouchableOpacity
+                                style={{
+                                    position: 'absolute',
+                                    top: -5,
+                                    right: -5,
+                                    backgroundColor: colors.blue(),
+                                    borderRadius: 25,
+                                }}
+                                onPress={() => setImage(null)}>
+                                <Add
+                                    size={20}
+                                    variant="Linear"
+                                    color={colors.white()}
+                                    style={{ transform: [{ rotate: '45deg' }] }}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    ) : (
+                        <TouchableOpacity onPress={handleImagePick}>
+                            <View
+                                style={[
+                                    styles.borderDashed,
+                                    {
+                                        gap: 10,
+                                        paddingVertical: 30,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    },
+                                ]}>
+                                <AddSquare color={colors.grey(0.6)} variant="Linear" size={42} />
+                                <Text
+                                    style={{
+                                        fontFamily: fontType['Pjs-Regular'],
+                                        fontSize: 12,
+                                        color: colors.grey(0.6),
+                                    }}>
+                                    Upload Thumbnail
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}
                     <TouchableOpacity style={form.btnUpdate} onPress={handleUpdate}>
                         <Text style={form.textBtn}>
                             Update
@@ -124,6 +220,8 @@ const EditBlogPage = ({ route }) => {
         </View>
     );
 };
+
+export default EditBlogPage;
 
 const styles = StyleSheet.create({
     container: {
@@ -152,9 +250,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    borderDashed: {
+        borderStyle: "dashed",
+        borderWidth: 1,
+        borderRadius: 5,
+        marginTop: 20,
+        padding: 10,
+        borderColor: "#2bbaae",
+    },
 });
-
-export default EditBlogPage;
 
 const form = StyleSheet.create({
     container: {
