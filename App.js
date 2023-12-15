@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AddBlogPage, DiscoverPage, ExplorePage, HomePage, ProfilePage, SearchPage, EditBlogPage } from './src/screens';
+import { AddBlogPage, DiscoverPage, ExplorePage, HomePage, ProfilePage, SearchPage, EditBlogPage, RegisterPage, LoginPage, SplashScreen } from './src/screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { fontType, colors } from './src/theme';
@@ -14,7 +14,7 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName="LoginPage"> 
         <Stack.Screen
           name="MainApp"
           component={MainApp}
@@ -46,6 +46,16 @@ export default function App() {
           options={{
             headerShown: false,
           }}
+        />
+        <Stack.Screen
+          name="LoginPage"
+          component={LoginPage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="RegisterPage"
+          component={RegisterPage}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
